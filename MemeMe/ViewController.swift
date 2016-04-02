@@ -77,7 +77,18 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
     @IBAction func shareMemedImage(sender: AnyObject) {
         let image = generateMemedImage()
         let controller = UIActivityViewController(activityItems: [image], applicationActivities: nil)
-        self.presentViewController(controller, animated: true, completion: nil)
+        controller.completionWithItemsHandler = { activity, success, items, error in
+            if success {
+                self.save(image)
+            }
+            
+        }
+        presentViewController(controller, animated: true, completion: nil)
+    }
+    
+    private func save(memedImage : UIImage) {
+        //Create the meme
+        let meme = Meme( topText: textFieldTop.text!, bottomText: textFieldBottom.text!, originalImage: imageView.image!, memedImage: memedImage)
     }
     
     func generateMemedImage() -> UIImage
