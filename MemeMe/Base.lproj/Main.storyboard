@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -22,7 +22,11 @@
                                 <rect key="frame" x="0.0" y="556" width="600" height="44"/>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="YgA-1s-IvW"/>
-                                    <barButtonItem systemItem="camera" id="vyf-1P-ryT"/>
+                                    <barButtonItem systemItem="camera" id="vyf-1P-ryT">
+                                        <connections>
+                                            <action selector="selectAPhotoFromCamera:" destination="BYZ-38-t0r" id="in9-y8-ic9"/>
+                                        </connections>
+                                    </barButtonItem>
                                     <barButtonItem title="Album" id="lZ5-bN-cOe">
                                         <connections>
                                             <action selector="selectAPhotoFromAlbum:" destination="BYZ-38-t0r" id="S2L-jE-wdE"/>
@@ -44,7 +48,11 @@
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="dhd-Y7-xYV"/>
-                                    <barButtonItem title="Cancel" id="tCg-Tt-SHb"/>
+                                    <barButtonItem title="Cancel" id="tCg-Tt-SHb">
+                                        <connections>
+                                            <action selector="cancelImage:" destination="BYZ-38-t0r" id="gAp-37-jrQ"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="TOP" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="UTN-36-LI2">
@@ -81,6 +89,7 @@
                     <connections>
                         <outlet property="cameraButton" destination="vyf-1P-ryT" id="aHv-oM-lnp"/>
                         <outlet property="imageView" destination="m1i-9d-gAh" id="k7G-r2-6we"/>
+                        <outlet property="shareButton" destination="PtB-tW-QKt" id="CVl-o5-9F0"/>
                         <outlet property="textFieldBottom" destination="LJD-MS-9f9" id="wQj-Vv-eLc"/>
                         <outlet property="textFieldTop" destination="UTN-36-LI2" id="8Yl-CK-DSK"/>
                         <outlet property="toolbarBottom" destination="Yjs-GH-isF" id="4MO-yg-wC5"/>

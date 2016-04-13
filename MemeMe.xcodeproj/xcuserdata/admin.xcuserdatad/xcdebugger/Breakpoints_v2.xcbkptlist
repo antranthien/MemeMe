@@ -6,16 +6,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MemeMe/ViewController.swift"
-            timestampString = "481037747.250104"
+            timestampString = "482233189.642348"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
-            landmarkName = "save(_:)"
+            startingLineNumber = "178"
+            endingLineNumber = "178"
+            landmarkName = "selectAPhotoFromCamera(_:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

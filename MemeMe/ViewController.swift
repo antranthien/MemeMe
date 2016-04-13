@@ -18,6 +18,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
     
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     
+    @IBOutlet weak var shareButton: UIBarButtonItem!
     
     @IBOutlet weak var toolbarTop: UIToolbar!
 
@@ -37,7 +38,11 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         textFieldTop.delegate = self
         textFieldBottom.delegate = self
         
-        //textFieldTop.tag = Consta
+        textFieldTop.tag = Constants.Meme.Tag.top
+        textFieldBottom.tag = Constants.Meme.Tag.bottom
+        
+        // disable Share button by default
+        shareButton.enabled = false
 
     }
     
@@ -45,7 +50,10 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        // disable the camera button if it´s not supported (in simulators)
         cameraButton.enabled = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera)
+        
         subscribeToKeyboardNotifications()
         
     }
@@ -54,32 +62,35 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         super.viewWillDisappear(animated)
         unsubscribeFromKeyboardNotifications()
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     override func prefersStatusBarHidden() -> Bool {
+        // hide the status bar
         return true
     }
 
 
-    @IBAction func selectAPhotoFromAlbum(sender: AnyObject) {
-        let imagePicker = UIImagePickerController()
+    @IBAction func cancelImage(sender: AnyObject) {
+        // clear the image
+        imageView.image = nil
         
-        imagePicker.delegate = self
-        imagePicker.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
-        presentViewController(imagePicker, animated: true, completion: nil)
+        // set textfields back to default values
+        textFieldTop.text = Constants.Meme.DefaultText.top
+        textFieldBottom.text = Constants.Meme.DefaultText.bottom
+        
+        // disable the Share button
+        shareButton.enabled = false
     }
     
     
     @IBAction func shareMemedImage(sender: AnyObject) {
         let image = generateMemedImage()
+        
+        // Pass the Meme image to the Activity Controller
         let controller = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         controller.completionWithItemsHandler = { activity, success, items, error in
             if success {
                 self.save(image)
+                controller.dismissViewControllerAnimated(true, completion: nil)
             }
             
         }
@@ -134,8 +145,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
     }
     
     func subscribeToKeyboardNotifications() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:" , name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:" , name: UIKeyboardWillHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardWillShow(_:)) , name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardWillHide(_:)) , name: UIKeyboardWillHideNotification, object: nil)
     }
     
     func unsubscribeFromKeyboardNotifications() {
@@ -147,14 +158,44 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
 
 }
 
+// UIImagePicker Delegate
 extension ViewController : UIImagePickerControllerDelegate {
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         if let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage{
             imageView.image = selectedImage
+            
+            shareButton.enabled = true
         }
         
         dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    @IBAction func selectAPhotoFromAlbum(sender: AnyObject) {
+        selectAPhotoFromASource(UIImagePickerControllerSourceType.PhotoLibrary)
+    }
+    
+    @IBAction func selectAPhotoFromCamera(sender: AnyObject) {
+        selectAPhotoFromASource(UIImagePickerControllerSourceType.Camera)
+    }
+    
+    // sourceType is nil: Camera source
+    private func selectAPhotoFromASource(sourceType : UIImagePickerControllerSourceType){
+        
+        let imagePicker = UIImagePickerController()
+        
+        imagePicker.delegate = self
+        imagePicker.sourceType = sourceType
+        if sourceType == UIImagePickerControllerSourceType.Camera {
+            imagePicker.allowsEditing = true
+
+        }
+        
+        // display an Image Picker ViewController
+        presentViewController(imagePicker, animated: true, completion: nil)
+
+        
+    }
+
     
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
         dismissViewControllerAnimated(true, completion: nil)
@@ -162,6 +203,7 @@ extension ViewController : UIImagePickerControllerDelegate {
 
 }
 
+// TextField Delagate
 extension ViewController : UITextFieldDelegate {
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -170,9 +212,12 @@ extension ViewController : UITextFieldDelegate {
     }
     
     func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
-        if textField.text == Constants.Meme.DefaultText.bottom || textField.text == Constants.Meme.DefaultText.top{
+        // empty the default text when editing
+        if (textField.tag == Constants.Meme.Tag.top && textField.text == Constants.Meme.DefaultText.top)
+         || (textField.tag == Constants.Meme.Tag.bottom  && textFieldBottom.text == Constants.Meme.DefaultText.bottom) {
             textField.text = ""
         }
+        
         
         return true
     }
