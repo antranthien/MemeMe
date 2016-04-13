@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UINavigationControllerDelegate  {
+class MemeEditorViewController: UIViewController, UINavigationControllerDelegate  {
 
     @IBOutlet weak var imageView: UIImageView!
     
@@ -30,20 +30,11 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        textFieldTop.defaultTextAttributes = Constants.Meme.textAttributes
-        textFieldBottom.defaultTextAttributes = Constants.Meme.textAttributes
-        textFieldTop.textAlignment = .Center
-        textFieldBottom.textAlignment = .Center
-        
-        textFieldTop.delegate = self
-        textFieldBottom.delegate = self
-        
-        textFieldTop.tag = Constants.Meme.Tag.top
-        textFieldBottom.tag = Constants.Meme.Tag.bottom
+        textFieldSetup(textFieldTop, tag: Constants.Meme.Tag.top)
+        textFieldSetup(textFieldBottom, tag: Constants.Meme.Tag.bottom)
         
         // disable Share button by default
         shareButton.enabled = false
-
     }
     
     
@@ -66,6 +57,15 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
     override func prefersStatusBarHidden() -> Bool {
         // hide the status bar
         return true
+    }
+    
+    
+    private func textFieldSetup(textField : UITextField, tag : Int){
+        textField.defaultTextAttributes = Constants.Meme.textAttributes
+        textField.textAlignment = .Center
+        textField.delegate = self
+        
+        textField.tag = tag
     }
 
 
@@ -124,7 +124,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
     
     func keyboardWillShow(notification: NSNotification) {
         if textFieldBottom.isFirstResponder(){
-            view.frame.origin.y -= getKeyboardHeight(notification)
+            view.frame.origin.y = getKeyboardHeight(notification) * -1
         }
 
         
@@ -132,7 +132,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
     
     func keyboardWillHide(notification: NSNotification) {
         if textFieldBottom.isFirstResponder(){
-            view.frame.origin.y += getKeyboardHeight(notification)
+            view.frame.origin.y = 0
         }
         
         
@@ -145,8 +145,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
     }
     
     func subscribeToKeyboardNotifications() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardWillShow(_:)) , name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardWillHide(_:)) , name: UIKeyboardWillHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MemeEditorViewController.keyboardWillShow(_:)) , name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MemeEditorViewController.keyboardWillHide(_:)) , name: UIKeyboardWillHideNotification, object: nil)
     }
     
     func unsubscribeFromKeyboardNotifications() {
@@ -159,9 +159,9 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
 }
 
 // UIImagePicker Delegate
-extension ViewController : UIImagePickerControllerDelegate {
+extension MemeEditorViewController : UIImagePickerControllerDelegate {
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-        if let selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage{
+        if let selectedImage = info[UIImagePickerControllerEditedImage] as? UIImage{
             imageView.image = selectedImage
             
             shareButton.enabled = true
@@ -185,10 +185,7 @@ extension ViewController : UIImagePickerControllerDelegate {
         
         imagePicker.delegate = self
         imagePicker.sourceType = sourceType
-        if sourceType == UIImagePickerControllerSourceType.Camera {
-            imagePicker.allowsEditing = true
-
-        }
+        imagePicker.allowsEditing = true
         
         // display an Image Picker ViewController
         presentViewController(imagePicker, animated: true, completion: nil)
@@ -204,7 +201,7 @@ extension ViewController : UIImagePickerControllerDelegate {
 }
 
 // TextField Delagate
-extension ViewController : UITextFieldDelegate {
+extension MemeEditorViewController : UITextFieldDelegate {
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         
